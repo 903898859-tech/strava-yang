@@ -3,14 +3,10 @@ name: Sync Garmin CN to Garmin Global
 on:
   workflow_dispatch:
   schedule:
-    #  每6小时检查一次
-    - cron: "0 */1 * * *"
-  push:
-    branches:
-      - main
+    # 每6小时检查一次（UTC）
+    - cron: "0 */6 * * *"
 
 env:
-  # please change to your own config.
   RQ_COOKIE: ${{ secrets.RQ_COOKIE }}
   RQ_CSRF_TOKEN: ${{ secrets.RQ_CSRF_TOKEN }}
   RQ_USERID: ${{ secrets.RQ_USERID }}
@@ -29,15 +25,20 @@ jobs:
     name: Sync Garmin CN to Garmin Global
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '20'
           cache: 'yarn'
-      - run: yarn
+
+      - run: yarn --frozen-lockfile
+
       - run: yarn sync_cn
         timeout-minutes: 5
+
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Save Garmin Session
