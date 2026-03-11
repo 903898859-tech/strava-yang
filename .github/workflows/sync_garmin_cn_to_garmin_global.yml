@@ -3,7 +3,7 @@ name: Sync Garmin CN to Garmin Global
 on:
   workflow_dispatch:
   schedule:
-    # 每6小时检查一次（UTC）
+    # 每6小时运行一次（UTC）
     - cron: "0 */6 * * *"
 
 env:
@@ -27,18 +27,23 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: "20"
+          cache: "yarn"
 
-      - run: yarn --frozen-lockfile
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
 
-      - run: yarn sync_cn
+      - name: Sync Garmin CN to Garmin Global
+        run: yarn sync_cn
         timeout-minutes: 5
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Auto commit if changed
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Save Garmin Session
