@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # 每6小时运行一次（UTC）
-    - cron: "0 */6 * * *"
+    - cron: "0 */24 * * *"
 
 env:
   RQ_COOKIE: ${{ secrets.RQ_COOKIE }}
